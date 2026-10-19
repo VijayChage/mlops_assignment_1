@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "mlruns", "data", "artifacts", "reports/figures"]
+# Check for syntax errors and undefined names without imposing formatting-only rules.
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

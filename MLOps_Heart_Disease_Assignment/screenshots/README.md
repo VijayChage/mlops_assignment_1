@@ -1,0 +1,1 @@
+Capture real screenshots from your own run. Suggested evidence: EDA plots, MLflow runs, passing pytest/Ruff, green GitHub Actions workflow, Docker build and running API, Swagger prediction response, Prometheus metrics, and Kubernetes pods/service. Do not fabricate screenshots.
