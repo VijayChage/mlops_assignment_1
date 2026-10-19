@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__
+*.py[cod]
+*.db
+.venv
+venv
+.env
+.pytest_cache
+.ruff_cache
+mlruns
+data
+reports
+screenshots
+tests
