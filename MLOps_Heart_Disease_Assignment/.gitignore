@@ -9,6 +9,8 @@ data/processed/*
 !data/processed/.gitkeep
 artifacts/*
 !artifacts/.gitkeep
+!artifacts/model.joblib
+!artifacts/model_metadata.json
 reports/figures/*
 !reports/figures/.gitkeep
 .env
