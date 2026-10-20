@@ -3,7 +3,7 @@ name: MLOps CI
 on:
   push:
     branches:
-      - feature/cicd-changes
+      - main
   pull_request:
   workflow_dispatch:
 
