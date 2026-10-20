@@ -31,6 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Diagnose MLflow and SQLAlchemy versions
+        run: |
+          python -m pip show mlflow sqlalchemy
+          python -c "import sqlalchemy; print('SQLAlchemy:', sqlalchemy.__version__); print('Module:', sqlalchemy.__file__)"
+          python -c "from sqlalchemy.pool import FallbackAsyncAdaptedQueuePool; print('FallbackAsyncAdaptedQueuePool: available')"
+          
       - name: Lint
         run: ruff check .
 
