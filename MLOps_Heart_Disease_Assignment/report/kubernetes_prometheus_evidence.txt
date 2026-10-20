@@ -1,0 +1,57 @@
+MLOps Assignment 01 - Kubernetes and Prometheus Evidence
+Tue Oct 20 08:08:55 AM IST 2026
+
+===== Kubernetes Node =====
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION                 CONTAINER-RUNTIME
+minikube   Ready    control-plane   12m   v1.32.0   192.168.49.2   <none>        Ubuntu 22.04.5 LTS   5.14.0-503.14.1.el9_5.x86_64   docker://27.4.1
+
+===== Deployments =====
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+heart-disease-api   2/2     2            2           7m
+prometheus          1/1     1            1           3m9s
+
+===== Pods =====
+NAME                                 READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+heart-disease-api-6fc6d6ffff-6cq5p   1/1     Running   0          7m     10.244.0.4   minikube   <none>           <none>
+heart-disease-api-6fc6d6ffff-wqm97   1/1     Running   0          7m     10.244.0.3   minikube   <none>           <none>
+prometheus-775678d6fd-cxrcb          1/1     Running   0          3m9s   10.244.0.5   minikube   <none>           <none>
+
+===== Services =====
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+heart-disease-api   NodePort    10.109.60.233   <none>        8000:30080/TCP   7m
+kubernetes          ClusterIP   10.96.0.1       <none>        443/TCP          12m
+prometheus          NodePort    10.97.247.18    <none>        9090:30090/TCP   3m8s
+
+===== API Service Endpoints =====
+NAME                ENDPOINTS                         AGE
+heart-disease-api   10.244.0.3:8000,10.244.0.4:8000   7m
+
+===== API Health Check =====
+HTTP/1.1 200 OK
+date: Tue, 20 Oct 2026 02:38:56 GMT
+server: uvicorn
+content-length: 35
+content-type: application/json
+
+{"status":"ok","model_loaded":true}
+===== API Prediction =====
+HTTP/1.1 200 OK
+date: Tue, 20 Oct 2026 02:38:56 GMT
+server: uvicorn
+content-length: 182
+content-type: application/json
+
+{"prediction":0,"label":"disease_absent","confidence":0.7958,"positive_class_probability":0.2042,"disclaimer":"Educational output only; not a diagnosis or calibrated clinical risk."}
+===== Prometheus Readiness =====
+Prometheus Server is Ready.
+
+
+===== Prometheus Targets =====
+{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"heart-disease-api.default.svc.cluster.local:8000","__metrics_path__":"/metrics","__scheme__":"http","__scrape_interval__":"15s","__scrape_timeout__":"10s","job":"heart-disease-api"},"labels":{"instance":"heart-disease-api.default.svc.cluster.local:8000","job":"heart-disease-api"},"scrapePool":"heart-disease-api","scrapeUrl":"http://heart-disease-api.default.svc.cluster.local:8000/metrics","globalUrl":"http://heart-disease-api.default.svc.cluster.local:8000/metrics","lastError":"","lastScrape":"2026-10-20T02:38:53.822721272Z","lastScrapeDuration":0.008252258,"health":"up","scrapeInterval":"15s","scrapeTimeout":"10s"},{"discoveredLabels":{"__address__":"localhost:9090","__metrics_path__":"/metrics","__scheme__":"http","__scrape_interval__":"15s","__scrape_timeout__":"10s","job":"prometheus"},"labels":{"instance":"localhost:9090","job":"prometheus"},"scrapePool":"prometheus","scrapeUrl":"http://localhost:9090/metrics","globalUrl":"http://prometheus-775678d6fd-cxrcb:9090/metrics","lastError":"","lastScrape":"2026-10-20T02:38:48.360696108Z","lastScrapeDuration":0.006338698,"health":"up","scrapeInterval":"15s","scrapeTimeout":"10s"}],"droppedTargets":[],"droppedTargetCounts":{"heart-disease-api":0,"prometheus":0}}}
+
+===== API Request Metrics =====
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"api_requests_total","endpoint":"/health","instance":"heart-disease-api.default.svc.cluster.local:8000","job":"heart-disease-api","method":"GET","status":"200"},"value":[1792463936.799,"65"]},{"metric":{"__name__":"api_requests_total","endpoint":"/metrics","instance":"heart-disease-api.default.svc.cluster.local:8000","job":"heart-disease-api","method":"GET","status":"200"},"value":[1792463936.799,"6"]}]}}
+
+===== API Scrape Health =====
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","instance":"heart-disease-api.default.svc.cluster.local:8000","job":"heart-disease-api"},"value":[1792463936.819,"1"]}]}}
+===== End of Evidence =====

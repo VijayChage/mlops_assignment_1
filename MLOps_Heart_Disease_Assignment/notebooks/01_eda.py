@@ -9,24 +9,21 @@
 # %% [markdown]
 # # 01 — Data Acquisition & Exploratory Data Analysis
 #
-# Heart Disease UCI dataset (UCI ML Repository id 45, via `ucimlrepo`).
-# Steps: download → validate → inspect → visualize (class balance, histograms, correlation heatmap).
+# Uses the project dataset and canonical preprocessing/validation.
 
 # %%
 import sys
 from pathlib import Path
 
 ROOT = Path.cwd().parent if Path.cwd().name == "notebooks" else Path.cwd()
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 import matplotlib
 matplotlib.use("Agg")  # safe for headless/CI runs; use "inline" for interactive work
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from ucimlrepo import fetch_ucirepo
-
-from heartml.data import validate_dataframe
+from src.heartml.data import load_dataset
 
 FIGURES = ROOT / "reports" / "figures"
 FIGURES.mkdir(parents=True, exist_ok=True)
@@ -34,27 +31,24 @@ sns.set_theme(style="whitegrid")
 
 # %% [markdown]
 # ## 1. Download the dataset
-# `scripts/download_data.py` performs the same step and caches to `data/raw/`.
-# The notebook fetches directly so every cell is self-contained.
+# If the dataset is missing, run `python scripts/download_data.py` first.
 
 # %%
-heart = fetch_ucirepo(id=45)
-df_raw = pd.concat([heart.data.features, heart.data.targets], axis=1)
+DATA = ROOT / "data" / "processed" / "heart_disease_processed.csv"
+if not DATA.exists():
+    raise FileNotFoundError(
+        f"Dataset not found: {DATA}. Run `python scripts/download_data.py` first."
+    )
 
-# UCI's full target `num` ranges 0-4; binarize to presence/absence (0 vs >0).
-if "num" in df_raw.columns:
-    df_raw["target"] = (df_raw["num"] > 0).astype(int)
-    df_raw = df_raw.drop(columns=["num"])
-
-df_raw.head()
+df = load_dataset(DATA)
+df.head()
 
 # %% [markdown]
 # ## 2. Validate the schema
-# Uses the same validation used by the pipeline and unit tests.
+# Uses the same load_dataset validation as the production training pipeline.
 
 # %%
-df = validate_dataframe(df_raw)
-print(f"Validated: {df.shape[0]} rows x {df.shape[1]} columns")
+print(f"Loaded and validated: {df.shape[0]} rows x {df.shape[1]} columns")
 df.dtypes
 
 # %% [markdown]

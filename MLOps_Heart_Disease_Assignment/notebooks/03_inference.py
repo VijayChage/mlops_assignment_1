@@ -19,18 +19,19 @@ import sys
 from pathlib import Path
 
 ROOT = Path.cwd().parent if Path.cwd().name == "notebooks" else Path.cwd()
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 import json
 import joblib
 import pandas as pd
 import requests
 
-from heartml.data import validate_features
+from src.heartml.data import load_dataset, validate_features
+from src.heartml.schema import FEATURES
 
 model = joblib.load(ROOT / "artifacts" / "model.joblib")
 metadata = json.loads((ROOT / "artifacts" / "model_metadata.json").read_text())
-print("Loaded model:", metadata["model_name"], "| test metrics:", metadata["test_metrics"])
+print("Loaded model:", metadata.get("selected_model", metadata.get("model_name", "unknown")), "| test metrics:", metadata.get("test_metrics", {}))
 
 # %% [markdown]
 # ## 1. Single prediction — sample request
@@ -47,8 +48,8 @@ print(f"Prediction: {prediction} | Confidence (P(disease)): {proba:.4f}")
 # ## 2. Batch inference over the processed dataset
 
 # %%
-df = pd.read_csv(ROOT / "data" / "processed" / "heart_disease_processed.csv")
-X_all = df.drop(columns=["target"])
+df = load_dataset(ROOT / "data" / "processed" / "heart_disease_processed.csv")
+X_all = df[FEATURES]
 probas = model.predict_proba(X_all)[:, 1]
 preds = (probas >= 0.5).astype(int)
 
@@ -61,6 +62,7 @@ out.head(10)
 
 # %%
 print(f"Batch accuracy: {out['correct'].mean():.4f} on {len(out)} rows")
+(ROOT / "reports").mkdir(parents=True, exist_ok=True)
 out.to_csv(ROOT / "reports" / "batch_inference_results.csv", index=False)
 print("Saved reports/batch_inference_results.csv")
 
@@ -84,8 +86,8 @@ print("Health:", health.status_code, health.json())
 
 # %% [markdown]
 # ### Notes
-# - `validate_features` guarantees the JSON has exactly the 13 expected features
-#   with valid types/ranges — the same guard as the API.
+# - `validate_features` checks required features and converts their values to
+#   the types expected by the shared preprocessing pipeline.
 # - Confidence is the model's positive-class probability, **not** a calibrated
 #   clinical risk (educational prototype only).
 # - After running section 3, hit `/metrics` and confirm `api_requests_total`
