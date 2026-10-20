@@ -2,7 +2,8 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/app/src
 
 WORKDIR /app
 
@@ -15,4 +16,4 @@ COPY artifacts/model.joblib ./artifacts/model.joblib
 
 EXPOSE 8000
 
-CMD ["uvicorn", "src.heartml.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "heartml.api:app", "--host", "0.0.0.0", "--port", "8000"]

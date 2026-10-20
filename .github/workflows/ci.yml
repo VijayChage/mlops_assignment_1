@@ -2,12 +2,18 @@ name: MLOps CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
 jobs:
   validate-train:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: MLOps_Heart_Disease_Assignment
 
     steps:
       - name: Checkout repository
@@ -18,12 +24,19 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+          cache-dependency-path: MLOps_Heart_Disease_Assignment/requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Diagnose MLflow and SQLAlchemy versions
+        run: |
+          python -m pip show mlflow sqlalchemy
+          python -c "import sqlalchemy; print('SQLAlchemy:', sqlalchemy.__version__); print('Module:', sqlalchemy.__file__)"
+          python -c "from sqlalchemy.pool import FallbackAsyncAdaptedQueuePool; print('FallbackAsyncAdaptedQueuePool: available')"
+          
       - name: Lint
         run: ruff check .
 
@@ -48,8 +61,8 @@ jobs:
         with:
           name: mlops-run-artifacts
           path: |
-            artifacts/
-            data/processed/
-            reports/figures/
-            mlflow.db
+            MLOps_Heart_Disease_Assignment/artifacts/
+            MLOps_Heart_Disease_Assignment/data/processed/
+            MLOps_Heart_Disease_Assignment/reports/figures/
+            MLOps_Heart_Disease_Assignment/mlflow.db
           if-no-files-found: warn
