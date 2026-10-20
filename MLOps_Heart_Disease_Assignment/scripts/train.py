@@ -19,7 +19,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from src.heartml.data import load_dataset, make_preprocessor
 from src.heartml.schema import FEATURES, TARGET
-DATA = ROOT / "data/raw/heart_disease.csv"
+DATA = ROOT / "data/processed/heart_disease_processed.csv"
 ARTIFACTS = ROOT / "artifacts"
 FIGURES = ROOT / "reports/figures"
 SEED = 42
